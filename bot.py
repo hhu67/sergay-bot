@@ -31,8 +31,11 @@ async def start(message: Message):
 @dp.message(Command("phrase"))
 async def phrase(message: Message):
     cursor.execute("SELECT phrase FROM sergay_bot ORDER BY RANDOM() LIMIT 1")
-    phrase = cursor.fetchone()[0]
-    await message.answer(f"серГЕЙ {phrase}")
+    row = cursor.fetchone()
+    if row:
+        await message.answer(f"Добавленно серГЕЙ {row[0]}")
+    else:
+        await message.answer("Записей нет иди нахуй")
 
 @dp.message(Command("new"))
 async def new(message: Message, state: FSMContext):
