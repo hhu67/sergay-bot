@@ -33,7 +33,7 @@ async def phrase(message: Message):
     cursor.execute("SELECT phrase FROM sergay_bot ORDER BY RANDOM() LIMIT 1")
     row = cursor.fetchone()
     if row:
-        await message.answer(f"Добавленно серГЕЙ {row[0]}")
+        await message.answer(f"серГЕЙ {row[0]}")
     else:
         await message.answer("Записей нет иди нахуй")
 
