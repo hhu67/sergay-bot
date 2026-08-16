@@ -31,6 +31,12 @@ start_text = """Жми:
 /new
 /view"""
 
+MEDIA_ENDPOINTS = {
+    "audio": "https://sergay.hhu67.pw/api/get/audio/random/",
+    "photo": "https://sergay.hhu67.pw/api/get/random/",
+    "video": "https://sergay.hhu67.pw/api/get/video/random/",
+}
+
 # noinspection PyArgumentList
 @dp.message(CommandStart())
 async def start(message: Message):
@@ -49,12 +55,9 @@ async def phrase(message: Message):
     phrase_text = row[0]
 
     if random.randint(1, 100) <= 50:
-        is_audio = random.random() < 0.5
-        api_url = (
-            "https://sergay.hhu67.pw/api/get/audio/random/"
-            if is_audio
-            else "https://sergay.hhu67.pw/api/get/random/"
-        )
+
+        media_type = random.choice(["audio", "photo", "video"])
+        api_url = MEDIA_ENDPOINTS[media_type]
 
         async with aiohttp.ClientSession() as session:
             try:
@@ -63,17 +66,15 @@ async def phrase(message: Message):
                     data = await resp.json()
                     media_url = data.get("link")
 
-                    if is_audio:
-                        await message.answer_audio(
-                            audio=media_url,
-                            caption=f"серГЕЙ {phrase_text}"
-                        )
-                    else:
-                        await message.answer_photo(
-                            photo=media_url,
-                            caption=f"серГЕЙ {phrase_text}"
-                        )
+                    if media_type == "audio":
+                        await message.answer_audio(audio=media_url, caption=phrase_text)
+                    elif media_type == "photo":
+                        await message.answer_photo(photo=media_url, caption=phrase_text)
+                    elif media_type == "video":
+                        await message.answer_video(video=media_url, caption=phrase_text)
+
             except Exception:
+
                 await message.answer(f"серГЕЙ {phrase_text}")
     else:
         await message.answer(f"серГЕЙ {phrase_text}")
