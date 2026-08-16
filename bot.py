@@ -42,10 +42,18 @@ async def phrase(message: Message):
 async def view(message: Message):
     cursor.execute("SELECT * FROM sergay_bot")
     rows = cursor.fetchall()
-    view_text = []
-    for row in rows:
-        view_text.append(row[1])
-    await message.answer(view_text)
+
+    if not rows:
+        await message.answer("Записей пока нет.")
+        return
+
+    view_text = "\n".join(str(row[1]) for row in rows)
+
+    if len(view_text) > 4000:
+        for chunk in range(0, len(view_text), 4000):
+            await message.answer(view_text[chunk:chunk + 4000])
+    else:
+        await message.answer(view_text)
 
 @dp.message(Command("new"))
 async def new(message: Message, state: FSMContext):
