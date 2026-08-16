@@ -45,7 +45,7 @@ async def view(message: Message):
     view_text = []
     for row in rows:
         view_text.append(row[1])
-    message.answer(view_text)
+    await message.answer(view_text)
 
 @dp.message(Command("new"))
 async def new(message: Message, state: FSMContext):
