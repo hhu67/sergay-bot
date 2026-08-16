@@ -52,7 +52,7 @@ async def phrase(message: Message):
         await message.answer("Записей нет иди нахуй")
         return
 
-    phrase_text = row[0]
+    phrase_text = f"серГЕЙ {row[0]}"
 
     if random.randint(1, 100) <= 50:
 
@@ -75,9 +75,9 @@ async def phrase(message: Message):
 
             except Exception:
 
-                await message.answer(f"серГЕЙ {phrase_text}")
+                await message.answer(phrase_text)
     else:
-        await message.answer(f"серГЕЙ {phrase_text}")
+        await message.answer(phrase_text)
 
 # noinspection PyArgumentList
 @dp.message(Command("view"))
