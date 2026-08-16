@@ -2,6 +2,10 @@ import asyncio
 import os
 import logging
 import sqlite3
+import sys
+import random
+import aiohttp
+
 from dotenv import load_dotenv
 from aiogram import Dispatcher, Bot, F
 from aiogram.types import Message
@@ -18,6 +22,8 @@ cursor = conn.cursor()
 
 
 TGBOT_TOKEN = os.getenv("TGBOT")
+if TGBOT_TOKEN is None:
+    sys.exit(1)
 bot = Bot(token=TGBOT_TOKEN)
 dp = Dispatcher()
 start_text = """Жми:
@@ -25,19 +31,54 @@ start_text = """Жми:
 /new
 /view"""
 
+# noinspection PyArgumentList
 @dp.message(CommandStart())
 async def start(message: Message):
     await message.answer(start_text)
 
+# noinspection PyArgumentList
 @dp.message(Command("phrase"))
 async def phrase(message: Message):
     cursor.execute("SELECT phrase FROM sergay_bot ORDER BY RANDOM() LIMIT 1")
     row = cursor.fetchone()
-    if row:
-        await message.answer(f"серГЕЙ {row[0]}")
-    else:
-        await message.answer("Записей нет иди нахуй")
 
+    if not row:
+        await message.answer("Записей нет иди нахуй")
+        return
+
+    phrase_text = row[0]
+
+    if random.randint(1, 100) <= 30:
+        is_audio = random.random() < 0.5
+        api_url = (
+            "https://sergay.hhu67.pw/api/get/audio/random/"
+            if is_audio
+            else "https://sergay.hhu67.pw/api/get/random/"
+        )
+
+        async with aiohttp.ClientSession() as session:
+            try:
+                async with session.get(api_url, timeout=aiohttp.ClientTimeout(total=10)) as resp:
+                    resp.raise_for_status()
+                    data = await resp.json()
+                    media_url = data.get("link")
+
+                    if is_audio:
+                        await message.answer_audio(
+                            audio=media_url,
+                            caption=f"серГЕЙ {phrase_text}"
+                        )
+                    else:
+                        await message.answer_photo(
+                            photo=media_url,
+                            caption=f"серГЕЙ {phrase_text}"
+                        )
+            except Exception:
+                await message.answer(f"серГЕЙ {phrase_text}")
+    else:
+        await message.answer(f"серГЕЙ {phrase_text}")
+
+# noinspection PyArgumentList
 @dp.message(Command("view"))
 async def view(message: Message):
     cursor.execute("SELECT * FROM sergay_bot")
@@ -55,6 +96,7 @@ async def view(message: Message):
     else:
         await message.answer(view_text)
 
+# noinspection PyArgumentList
 @dp.message(Command("new"))
 async def new(message: Message, state: FSMContext):
     await state.set_state(FormNewPhrase.phrase)
