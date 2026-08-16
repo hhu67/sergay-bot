@@ -22,7 +22,8 @@ bot = Bot(token=TGBOT_TOKEN)
 dp = Dispatcher()
 start_text = """Жми:
 /phrase
-/new"""
+/new
+/view"""
 
 @dp.message(CommandStart())
 async def start(message: Message):
@@ -36,6 +37,15 @@ async def phrase(message: Message):
         await message.answer(f"серГЕЙ {row[0]}")
     else:
         await message.answer("Записей нет иди нахуй")
+
+@dp.message(Command("view"))
+async def view(message: Message):
+    cursor.execute("SELECT * FROM sergay_bot")
+    rows = cursor.fetchall()
+    view_text = []
+    for row in rows:
+        view_text.append(row[1])
+    message.answer(view_text)
 
 @dp.message(Command("new"))
 async def new(message: Message, state: FSMContext):
