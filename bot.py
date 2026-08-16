@@ -48,7 +48,7 @@ async def phrase(message: Message):
 
     phrase_text = row[0]
 
-    if random.randint(1, 100) <= 30:
+    if random.randint(1, 100) <= 50:
         is_audio = random.random() < 0.5
         api_url = (
             "https://sergay.hhu67.pw/api/get/audio/random/"
