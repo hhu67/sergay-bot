@@ -52,7 +52,7 @@ async def phrase(message: Message):
         await message.answer("Записей нет иди нахуй")
         return
 
-    phrase_text = f"серГЕЙ {row[0]}"
+    phrase_text = row[0]
 
     if random.randint(1, 100) <= 50:
 
