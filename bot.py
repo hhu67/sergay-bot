@@ -107,10 +107,11 @@ async def new(message: Message, state: FSMContext):
 async def new_insert(message: Message, state: FSMContext):
     user_data = await state.get_data()
     phrase = message.text
+    print(phrase)
     cursor.execute("INSERT INTO sergay_bot (phrase) VALUES (?)", (phrase,))
     conn.commit()
     await state.clear()
-    await message.answer(f"Успешно добавленно серГЕЙ {phrase}")
+    await message.answer(f"Успешно добавленно {phrase}")
 
 @dp.message(F.text.startswith("/"))
 async def all_no_command(message: Message):
