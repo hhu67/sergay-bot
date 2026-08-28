@@ -9,7 +9,7 @@ import aiohttp
 from dotenv import load_dotenv
 from aiogram import Dispatcher, Bot, F
 from aiogram.types import Message
-from aiogram.filters import Command, CommandStart
+from aiogram.filters import Command, CommandStart, StateFilter
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
 
@@ -101,9 +101,18 @@ async def view(message: Message):
 @dp.message(Command("new"))
 async def new(message: Message, state: FSMContext):
     await state.set_state(FormNewPhrase.phrase)
-    await message.answer("Назови гандона по новому")
+    await message.answer("Назови гандона по новому или отмени через /cancel")
 
-@dp.message(FormNewPhrase.phrase)
+# noinspection PyArgumentList
+@dp.message(Command("cancel"), StateFilter("*"))
+async def cancel(message: Message, state: FSMContext):
+    current_state = await state.get_state()
+    if current_state is None:
+        return
+    await state.clear()
+    await message.answer("Сергей отменил ваше действие")
+
+@dp.message(FormNewPhrase.phrase, ~F.text.startswith("/"))
 async def new_insert(message: Message, state: FSMContext):
     user_data = await state.get_data()
     phrase = message.text
