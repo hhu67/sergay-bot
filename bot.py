@@ -34,7 +34,8 @@ start_text = """Жми:
 /new
 /view
 /instruction_gift
-/try_gift"""
+/try_gift
+/count_phrase"""
 
 inst_text = """Инструкция для подарка
 Первое возраст пидора
@@ -141,6 +142,17 @@ async def try_gift_t(message: Message, state: FSMContext):
 @dp.message(Command("instruction_gift"))
 async def inst_for_try_gift(message: Message):
     await message.answer(inst_text)
+
+@dp.message(Command("count_phrase"))
+async def count_phrase_h(message: Message):
+    cursor.execute("SELECT COUNT(*) FROM sergay_bot")
+    rows = cursor.fetchall
+
+    if not rows:
+        await message.answer("ПОШЕЛ ОТСЮДА")
+        return
+
+    await message.answer(f"Всего оскарблений {rows[0]}")
 
 @dp.message(Command("view"))
 async def view(message: Message):
