@@ -146,13 +146,17 @@ async def inst_for_try_gift(message: Message):
 @dp.message(Command("count_phrase"))
 async def count_phrase_h(message: Message):
     cursor.execute("SELECT COUNT(*) FROM sergay_bot")
-    rows = cursor.fetchall()
+    rows = cursor.fetchall() 
 
-    if not rows:
+    if not rows or rows[0][0] is None:
         await message.answer("ПОШЕЛ ОТСЮДА")
         return
 
-    await message.answer(f"Всего оскарблений {rows[0]}")
+    
+    count = rows[0][0]
+
+    await message.answer(f"Всего оскарблений {count}")
+
 
 @dp.message(Command("view"))
 async def view(message: Message):
