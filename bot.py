@@ -146,7 +146,7 @@ async def inst_for_try_gift(message: Message):
 @dp.message(Command("count_phrase"))
 async def count_phrase_h(message: Message):
     cursor.execute("SELECT COUNT(*) FROM sergay_bot")
-    rows = cursor.fetchall
+    rows = cursor.fetchall()
 
     if not rows:
         await message.answer("ПОШЕЛ ОТСЮДА")
